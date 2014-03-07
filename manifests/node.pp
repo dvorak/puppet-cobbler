@@ -77,41 +77,25 @@ define cobbler::node(
             $serial_opt = ""
         }
 
-  # the way that escaping works for the shell
-  # provider is difference starting in 2.7.14
-  $v_cmp = versioncmp($puppet::version, '2.7.13')
-  if $v_cmp > 0 {
-    $action_var = "\${action}"
-  } else {
-    $action_var = "\\\${action}"
-  }
+        file { "/etc/cobbler/add-scripts":
+          ensure => "directory",
+        }
+
+        file { "/etc/cobbler/add-scripts/${name}":
+          content => template("cobbler/add-node.erb"),
+          mode => "0744",
+          notify => Exec["cobbler-add-node-${name}"],
+        }
 
 	exec { "cobbler-add-node-${name}":
-
-		command => "if cobbler system list | grep ${name};
-                    then
-                        action=edit;
-                    else
-                        action='add --netboot-enabled=true'
-                    fi;
- 		    cobbler system ${action_var} \
-				--name='${name}' \
-				--mac-address='${mac}' \
-				--profile='${profile}' \
-				--ip-address=${ip} \
-				--dns-name='${name}.${domain}' \
-				--hostname='${name}.${domain}' \
-				--kickstart='${preseed_file}' \
-				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} ${log_opt}' \
-				--power-user=${power_user} \
-				--power-address=${power_address} \
-				--power-pass='${power_password}' \
-				--power-id=${power_id} \
-				--power-type=${power_type}",
-		provider => shell,
+		command => "/etc/cobbler/add-scripts/${name}",
 		path => "/usr/bin:/bin",
-                require => [Package[cobbler],Cobbler::Ubuntu::Preseed[$preseed],Anchor["cobbler-profile-${profile}"]],
+                require => [Package[cobbler],
+                            Anchor["cobbler-profile-${profile}"]],
+                subscribe => Cobbler::Ubuntu::Preseed[$preseed],
 		notify => Exec["cobbler-sync"],
+                refreshonly => true,
+                logoutput => true,
 	}
 
     if ( $add_hosts_entry ) {

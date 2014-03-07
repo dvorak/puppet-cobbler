@@ -171,8 +171,7 @@ class cobbler(
   }
 
 	exec { "cobbler-sync":
-		command => "/usr/sbin/cobbler_sync.py",
-		provider => shell,
+		command => "/usr/bin/cobbler sync",
 		require => Service[cobbler],
                 subscribe =>File['/etc/puppet/data/cobbler.yaml']
 	}

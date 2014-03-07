@@ -1,0 +1,25 @@
+#!/bin/bash -xev
+
+if cobbler system list | grep <%= @name %>; then
+  action=edit
+else
+  action="add --netboot-enabled=true"
+fi
+
+cobbler system ${action} \
+  --name='<%= @name %>' \
+  --mac-address='<%= @mac %>' \
+  --profile='<%= @profile %>' \
+  --ip-address=<%= @ip %> \
+  --dns-name='<%= @name %>.<%= @domain %>' \
+  --hostname='<%= @name %>.<%= @domain %>' \
+  --kickstart='<%= @preseed_file %>' \
+  --kopts='$net_settings partman-auto/disk=<%= @boot_disk %> <%= @log_opt %> <%= @serial_opt %>' \
+<% if @power_user and @power_user != "" -%>
+  --power-user="<%= @power_user %>" \
+  --power-address="<%= power_address %>" \
+  --power-pass="<%= power_password %>" \
+  --power-id="<%= power_id %>" \
+  --power-type="<%= @power_type %>" \
+<% end -%>
+
