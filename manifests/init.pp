@@ -177,6 +177,8 @@ class cobbler(
                 subscribe =>File['/etc/puppet/data/cobbler.yaml']
 	}
 
-
-
+        file { "/usr/sbin/cobbler-puppetca":
+          mode => "0755",
+          source => "puppet:///modules/cobbler/cobbler-puppetca",
+        }
 }
