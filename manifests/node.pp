@@ -53,7 +53,7 @@ define cobbler::node(
 	$extra_host_aliases = [])
 {
 
-	$preseed_file="/etc/cobbler/preseeds/$preseed"
+	$preseed_file="/etc/cobbler/preseed/$preseed"
 
         if($cobbler::node_gateway) {
             $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
