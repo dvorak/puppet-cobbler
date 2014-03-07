@@ -48,7 +48,7 @@ define cobbler::node(
 	$power_password = "",
 	$power_id = "",
 	$boot_disk = '/dev/sda',
-	$add_hosts_entry = true,
+	$add_hosts_entry = false,
 	$log_host = '',
 	$extra_host_aliases = [])
 {
