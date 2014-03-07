@@ -21,6 +21,8 @@ define cobbler::ubuntu::preseed(
   $openstack_repo_location = 'http://openstack-repo.cisco.com/openstack/cisco',
   $supplemental_repo = 'http://openstack-repo.cisco.com/openstack/cisco_supplemental',
   $pocket = '',
+  $preseed_template = 'cobbler/preseed.erb',
+  $late_command_template = '',
 ) {
     if ( ! defined(File['/etc/cobbler/preseed'])) {
         file { "/etc/cobbler/preseed":
@@ -29,6 +31,18 @@ define cobbler::ubuntu::preseed(
     }
 
     file { "/etc/cobbler/preseed/${name}":
-        content => template("cobbler/preseed.erb")
+        ensure => 'file',
+        content => template($preseed_template)
     }
-}
+
+    if ($late_command_template != '') {
+      file { "/var/www/preseed-data":
+        ensure => 'directory',
+      }
+
+      file { "/var/www/preseed-data/late_command":
+        ensure => "file",
+        content => template($late_command_template),
+      }
+    }
+  }
