@@ -7,7 +7,7 @@ define cobbler::ubuntu::preseed(
   $proxy = '',
   $ntp_server = undef,
   $admin_user = 'localadmin',
-  $password_crypted = '',
+  $password_crypted,
   $expert_disk = false,
   $diskpart = [],
   $time_zone = 'UTC',
