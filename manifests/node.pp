@@ -40,7 +40,7 @@ define cobbler::node(
 	$mac,
 	$profile,
 	$ip,
-	$domain,
+	$domain = $::domain,
 	$preseed,
 	$power_address = "",
 	$power_type = "",
