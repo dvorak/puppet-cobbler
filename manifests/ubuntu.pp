@@ -25,7 +25,7 @@ define cobbler::ubuntu($arch = "x86_64", $proxy = false) {
 	unless => "cobbler profile list | grep ${name}-${arch}",
         provider => shell,
         path => "/usr/bin:/bin",
-        require => Package[cobbler],
+        require => Service[cobbler],
     } 
     anchor{ "cobbler-profile-${name}-${arch}": 
 	require => Exec["cobbler-import-$name-$arch"],
