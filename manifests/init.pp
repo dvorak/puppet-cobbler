@@ -163,12 +163,12 @@ class cobbler(
              audit => content,
         }
 
-  service { 'cobbler':
-    ensure  => 'running',
-    enable  => true,
-    start   => '/sbin/start cobbler && /bin/sleep 1',
-    require => Package['cobbler'],
-  }
+        service { 'cobbler':
+          ensure    => 'running',
+          enable    => true,
+          start     => '/sbin/start cobbler && /bin/sleep 1',
+          subscribe => Package['cobbler'],
+        }
 
 	exec { "cobbler-sync":
 		command => "/usr/bin/cobbler sync",
