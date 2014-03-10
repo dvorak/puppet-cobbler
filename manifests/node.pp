@@ -85,14 +85,15 @@ define cobbler::node(
           content => template("cobbler/add-node.erb"),
           mode => "0744",
           notify => Exec["cobbler-add-node-${name}"],
+          require => [Service[cobbler],
+                      Anchor["cobbler-profile-${profile}"],
+                     ],
+          subscribe => Cobbler::Ubuntu::Preseed[$preseed],
         }
 
 	exec { "cobbler-add-node-${name}":
 		command => "/etc/cobbler/add-scripts/${name}",
 		path => "/usr/bin:/bin",
-                require => [Service[cobbler],
-                            Anchor["cobbler-profile-${profile}"]],
-                subscribe => Cobbler::Ubuntu::Preseed[$preseed],
 		notify => Exec["cobbler-sync"],
                 refreshonly => true,
                 logoutput => true,
