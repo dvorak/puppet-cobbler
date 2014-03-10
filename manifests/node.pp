@@ -90,7 +90,7 @@ define cobbler::node(
 	exec { "cobbler-add-node-${name}":
 		command => "/etc/cobbler/add-scripts/${name}",
 		path => "/usr/bin:/bin",
-                require => [Package[cobbler],
+                require => [Service[cobbler],
                             Anchor["cobbler-profile-${profile}"]],
                 subscribe => Cobbler::Ubuntu::Preseed[$preseed],
 		notify => Exec["cobbler-sync"],
