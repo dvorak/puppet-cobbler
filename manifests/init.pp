@@ -180,4 +180,9 @@ class cobbler(
           mode => "0755",
           source => "puppet:///modules/cobbler/cobbler-puppetca",
         }
+
+        file { "/etc/cobbler/add-scripts":
+          ensure => "directory",
+        }
+
 }

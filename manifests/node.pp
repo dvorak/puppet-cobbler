@@ -77,10 +77,6 @@ define cobbler::node(
             $serial_opt = ""
         }
 
-        file { "/etc/cobbler/add-scripts":
-          ensure => "directory",
-        }
-
         file { "/etc/cobbler/add-scripts/${name}":
           content => template("cobbler/add-node.erb"),
           mode => "0744",
