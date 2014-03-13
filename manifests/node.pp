@@ -50,6 +50,8 @@ define cobbler::node(
 	$boot_disk = '/dev/sda',
 	$add_hosts_entry = false,
 	$log_host = '',
+        $serial = false,
+        $serial_speed = 115200,
 	$extra_host_aliases = [])
 {
 
@@ -72,7 +74,7 @@ define cobbler::node(
         }
 
         if($serial) {
-            $serial_opt = "console=ttyS0,9600"
+            $serial_opt = "console=ttyS0,${serial_speed}"
         } else {
             $serial_opt = ""
         }
