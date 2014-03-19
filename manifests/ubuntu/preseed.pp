@@ -36,11 +36,13 @@ define cobbler::ubuntu::preseed(
     }
 
     if ($late_command_template != '') {
-      file { "/var/www/preseed-data":
-        ensure => 'directory',
+      if ( ! defined(File['/var/www/preseed-data'])) {
+        file { "/var/www/preseed-data":
+          ensure => 'directory',
+        }
       }
 
-      file { "/var/www/preseed-data/late_command":
+      file { "/var/www/preseed-data/${name}.late_command":
         ensure => "file",
         content => template($late_command_template),
       }
