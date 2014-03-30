@@ -138,6 +138,8 @@ class cobbler(
 
 	file { "/etc/cobbler/preseed":
 		ensure => directory,
+                purge => true,
+                recurse => true,
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 	}
 
@@ -182,7 +184,14 @@ class cobbler(
         }
 
         file { "/etc/cobbler/add-scripts":
-          ensure => "directory",
+          ensure  => "directory",
+          recurse => true,
+          purge   => true,
         }
 
+        file { "/var/www/preseed-data":
+          ensure  => 'directory',
+          recurse => true,
+          purge   => true,
+        }
 }

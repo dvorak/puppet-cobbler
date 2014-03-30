@@ -24,24 +24,12 @@ define cobbler::ubuntu::preseed(
   $preseed_template = 'cobbler/preseed.erb',
   $late_command_template = '',
 ) {
-    if ( ! defined(File['/etc/cobbler/preseed'])) {
-        file { "/etc/cobbler/preseed":
-            ensure => directory
-        }
-    }
-
     file { "/etc/cobbler/preseed/${name}":
         ensure => 'file',
         content => template($preseed_template)
     }
 
     if ($late_command_template != '') {
-      if ( ! defined(File['/var/www/preseed-data'])) {
-        file { "/var/www/preseed-data":
-          ensure => 'directory',
-        }
-      }
-
       file { "/var/www/preseed-data/${name}.late_command":
         ensure => "file",
         content => template($late_command_template),
