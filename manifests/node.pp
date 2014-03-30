@@ -1,7 +1,7 @@
 # Definition: cobbler::node
 #
-# This class installs a node into the cobbler system.  Cobbler needs to be included
-# in a toplevel node definition for this to be useful.
+# This class installs a node into the cobbler system.  Cobbler needs
+# to be included in a toplevel node definition for this to be useful.
 #
 # Parameters:
 # - $mac Mac address of the eth0 interface
@@ -10,13 +10,14 @@
 # - $domain Domain name to add to the resource name
 # - $preseed Cobbler/Ubuntu preseed/kickstart node name
 # - $power_address = "" Power management address for the node
-# - $power_type = "" 		Power management type (impitools, ucs, etc.)
+# - $power_type = ""    Power management type (impitools, ucs, etc.)
 # - $power_user = ""    Power management username
 # - $power_password = ""  Power management password
 # - $power_id = ""     Power management port-id/name
 # - $boot_disk = '/dev/sda'  Default Root disk name
 # - $serial = False (true for serial console)
-# - $add_hosts_entry = true, Create a cobbler local hosts entry (also useful for DNS)
+# - $add_hosts_entry = true, Create a cobbler local hosts entry (also
+#      useful for DNS)
 # - $extra_host_aliases = [] Any additional aliases to add to the host entry
 #
 # Example:
@@ -37,70 +38,70 @@
 # }
 #
 define cobbler::node(
-	$mac,
-	$profile,
-	$ip,
-	$domain = $::domain,
-	$preseed,
-	$power_address = "",
-	$power_type = "",
-	$power_user = "",
-	$power_password = "",
-	$power_id = "",
-	$boot_disk = '/dev/sda',
-	$add_hosts_entry = false,
-	$log_host = '',
-        $serial = false,
-        $serial_speed = 115200,
-	$extra_host_aliases = [])
-{
+  $mac,
+  $profile,
+  $ip,
+  $preseed,
+  $domain = $::domain,
+  $power_address = '',
+  $power_type = '',
+  $power_user = '',
+  $power_password = '',
+  $power_id = '',
+  $boot_disk = '/dev/sda',
+  $add_hosts_entry = false,
+  $log_host = '',
+  $serial = false,
+  $serial_speed = 115200,
+  $extra_host_aliases = [],
+) {
 
-	$preseed_file="/etc/cobbler/preseed/$preseed"
+  $preseed_file="/etc/cobbler/preseed/$preseed"
 
-        if($cobbler::node_gateway) {
-            $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
-        } else {
-            # There is a bug in Ubuntu's netcfg (as of 2012-09) that
-            # prevents no-gateway setups working.  This is a workaround
-            # - we remove the gateway in post-install.
-            # (no_default_route is conveniently spare)
-            $gateway_opt = "netcfg/get_gateway=${cobbler::ip} netcfg/no_default_route=true"
-        }
+  if $cobbler::node_gateway {
+    $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
+  } else {
+    # There is a bug in Ubuntu's netcfg (as of 2012-09) that
+    # prevents no-gateway setups working.  This is a workaround
+    # - we remove the gateway in post-install.
+    # (no_default_route is conveniently spare)
+    $gateway_opt = "netcfg/get_gateway=${cobbler::ip} netcfg/no_default_route=true"
+  }
 
-        if($log_host) {
-            $log_opt = "log_host=${log_host} BOOT_DEBUG=2"
-        } else {
-            $log_opt = ""
-        }
+  if $log_host {
+    $log_opt = "log_host=${log_host} BOOT_DEBUG=2"
+  } else {
+    $log_opt = ''
+  }
 
-        if($serial) {
-            $serial_opt = "console=ttyS0,${serial_speed}"
-        } else {
-            $serial_opt = ""
-        }
+  if $serial {
+    $serial_opt = "console=ttyS0,${serial_speed}"
+  } else {
+    $serial_opt = ''
+  }
 
-        file { "/etc/cobbler/add-scripts/${name}":
-          content => template("cobbler/add-node.erb"),
-          mode => "0744",
-          notify => Exec["cobbler-add-node-${name}"],
-          require => [Service[cobbler],
-                      Anchor["cobbler-profile-${profile}"],
-                     ],
-          subscribe => Cobbler::Ubuntu::Preseed[$preseed],
-        }
+  file { "/etc/cobbler/add-scripts/${name}":
+    content => template('cobbler/add-node.erb'),
+    mode    => '0744',
+    notify  => Exec["cobbler-add-node-${name}"],
+    require => [Service[cobbler],
+                Anchor["cobbler-profile-${profile}"],
+                ],
+    subscribe => Cobbler::Ubuntu::Preseed[$preseed],
+  }
 
-	exec { "cobbler-add-node-${name}":
-		command => "/etc/cobbler/add-scripts/${name}",
-		path => "/usr/bin:/bin",
-		notify => Exec["cobbler-sync"],
-                refreshonly => true,
-                logoutput => true,
-	}
+  exec { "cobbler-add-node-${name}":
+    command     => "/etc/cobbler/add-scripts/${name}",
+    path        => '/usr/bin:/bin',
+    notify      => Exec['cobbler-sync'],
+    refreshonly => true,
+    logoutput   => true,
+  }
 
-    if ( $add_hosts_entry ) {
-        host { "${name}.${domain}":
-            ip => "${ip}",
-            host_aliases => flatten(["${name}", $extra_host_aliases])
-        }
+  if $add_hosts_entry {
+    host { "${name}.${domain}":
+      ip           => $ip,
+      host_aliases => flatten([$name, $extra_host_aliases])
     }
+  }
 }
