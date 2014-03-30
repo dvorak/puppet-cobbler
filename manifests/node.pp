@@ -56,7 +56,16 @@ define cobbler::node(
   $extra_host_aliases = [],
 ) {
 
-  $preseed_file="/etc/cobbler/preseed/$preseed"
+  $preseed_name = "${preseed}.${name}"
+  $preseed_file = "/etc/cobbler/preseed/${preseed_name}"
+  $preseed_hash = hiera_hash('cobbler::ubuntu::preseed')
+  if ! has_key($preseed_hash, $preseed) {
+    fail("Cannot find preseed name $preseed in cobbler::ubuntu::preseed")
+  }
+
+  $new_preseed = { "${preseed_name}" => $preseed_hash[$preseed] }
+  $preseed_defaults = hiera_hash('cobbler::ubuntu::preseed::defaults',{})
+  create_resources('cobbler::ubuntu::preseed', $new_preseed, $preseed_defaults)
 
   if $cobbler::node_gateway {
     $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
@@ -87,7 +96,7 @@ define cobbler::node(
     require => [Service[cobbler],
                 Anchor["cobbler-profile-${profile}"],
                 ],
-    subscribe => Cobbler::Ubuntu::Preseed[$preseed],
+    subscribe => Cobbler::Ubuntu::Preseed[$preseed_name],
   }
 
   exec { "cobbler-add-node-${name}":
