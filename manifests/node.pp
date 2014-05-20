@@ -84,7 +84,7 @@ define cobbler::node(
   }
 
   if $serial {
-    $serial_opt = "console=ttyS0,${serial_speed}"
+    $serial_opt = " console=tty1 console=vga console=ttyS0,${serial_speed}"
   } else {
     $serial_opt = ''
   }
