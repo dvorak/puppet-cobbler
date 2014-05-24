@@ -10,6 +10,7 @@ cobbler system ${action} \
   --name='<%= @name %>' \
   --mac-address='<%= @mac %>' \
   --profile='<%= @profile %>' \
+  --interface=eth0 \
   --ip-address=<%= @ip %> \
   --dns-name='<%= @name %>.<%= @domain %>' \
   --hostname='<%= @name %>.<%= @domain %>' \
