@@ -11,8 +11,13 @@ WSGIScriptAliasMatch ^/cblr/svc/([^/]*) /var/www/cobbler/svc/services.py
 
 <Directory "/var/www/cobbler">
     Options Indexes FollowSymLinks
-    Order allow,deny
-    Allow from all
+    <IfVersion >= 2.4>
+        Require all granted
+    </IfVersion>
+    <IfVersion < 2.4>
+        Order allow,deny
+        Allow from all
+    </IfVersion>
 </Directory>
 
 ProxyRequests off
@@ -20,9 +25,14 @@ ProxyRequests off
 ProxyPass /cobbler_api http://localhost:25151/
 ProxyPassReverse /cobbler_api http://localhost:25151/
 <Location /cobbler_api>
-  Options indexes FollowSymLinks
-  Order allow,deny
-  Allow from all
+    Options indexes FollowSymLinks
+    <IfVersion >= 2.4>
+        Require all granted
+    </IfVersion>
+    <IfVersion < 2.4>
+        Order allow,deny
+        Allow from all
+    </IfVersion>
 </Location>
 
 BrowserMatch "MSIE" AuthDigestEnableQueryStringHack=On
@@ -33,6 +43,11 @@ BrowserMatch "MSIE" AuthDigestEnableQueryStringHack=On
 
 <Directory "/var/www/cobbler/web/">
     Options Indexes FollowSymLinks
-    Order allow,deny
-    Allow from all
+    <IfVersion >= 2.4>
+        Require all granted
+    </IfVersion>
+    <IfVersion < 2.4>
+        Order allow,deny
+        Allow from all
+    </IfVersion>
 </Directory>
