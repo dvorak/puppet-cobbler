@@ -1,3 +1,11 @@
 #!/bin/bash
 
+# Old cobbler expected to call the old 'puppetca' command which took the
+# arguments directly.  New cobbler expects to call 'puppet cert'  This script
+# makes cobbler work with either
+
+if [[ $1 = 'cert' ]]; then
+  shift
+fi
+
 /usr/bin/puppet cert $@ || true
