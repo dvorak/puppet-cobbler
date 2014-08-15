@@ -68,7 +68,7 @@ class cobbler(
 
 	$dhcp_package = $dhcp_service ? {
 		'dnsmasq' => 'dnsmasq',
-		'isc' => 'dhcp3-server',
+		'isc' => 'isc-dhcp-server',
 		default => undef,
 	}
 
